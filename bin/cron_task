@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -a
+. /root/env.sh
+. /root/.bashrc
+set +a
+exec $@ 2>&1

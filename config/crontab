@@ -1,0 +1,2 @@
+# m h dom mon dow user	command
+15  */4   *  *  *   root  cron_task dump_postgres

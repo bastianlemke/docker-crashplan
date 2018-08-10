@@ -1,0 +1,29 @@
+#!/bin/bash
+
+DATE=`/bin/date +%y%m%d-%H%M`
+
+########################################################
+##### (re)create .pgpass file for PostGreSQL dumps #####
+########################################################
+
+if [[ "$POSTGRES_PASSWORD" = "" ]]; then
+	echo "INFO: empty postgres password ... skipping PostGreSQL dump"
+	exit 1
+fi
+if [ ! -f ~/.pgpass ]; then
+	echo "postgres:5432:*:postgres:$POSTGRES_PASSWORD" > ~/.pgpass
+	chmod 600 ~/.pgpass
+fi
+
+########################################################
+##### remove old dumps and create a new dump ###########
+########################################################
+
+# delete all dumps older than 3 days
+find /backup/hildegard -type f -mtime +3 -name *.postgres.dump -exec rm {} \;
+pg_dumpall -f /backup/hildegard/$DATE.postgres.dump -h postgres -U postgres
+if [ $? -ne 0 ]; then
+	echo "ERROR: database backup was NOT successful!"
+	exit 1
+fi
+
